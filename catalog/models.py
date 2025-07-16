@@ -2,10 +2,12 @@ from django.db import models
 from django.urls import reverse
 import uuid
 from django.utils.translation import gettext_lazy as _
-from . import constants  
+from django.db.models import PROTECT
+from . import constants
+
 
 class Genre(models.Model):
-    """Model representing a book genre."""
+    """Model representing a book genre (e.g. Science Fiction, Non Fiction)."""
     name = models.CharField(
         max_length=constants.MAX_GENRE_NAME_LENGTH,
         help_text=_("Enter a book genre (e.g. Science Fiction)"),
@@ -17,15 +19,17 @@ class Genre(models.Model):
 
 class Book(models.Model):
     """Model representing a book (but not a specific copy)."""
-    title = models.CharField(max_length=200)
-    author = models.ForeignKey("Author", on_delete=models.SET_NULL, null=True)
+    title = models.CharField(max_length=constants.MAX_BOOK_TITLE_LENGTH)
+    author = models.ForeignKey(
+        "Author", on_delete=PROTECT  # <-- Đã đổi từ SET_NULL sang PROTECT
+    )
     summary = models.TextField(
         max_length=constants.MAX_BOOK_SUMMARY_LENGTH,
         help_text=_("Enter a brief description of the book"),
     )
     isbn = models.CharField(
         "ISBN",
-        max_length=13,
+        max_length=constants.MAX_ISBN_LENGTH,
         unique=True,
         help_text=_("13 Character ISBN number"),
     )
@@ -39,15 +43,23 @@ class Book(models.Model):
     def get_absolute_url(self):
         return reverse("book-detail", args=[str(self.id)])
 
+    def display_genre(self):
+        """Create a string for the Genre. Required for displaying in Admin."""
+        return ', '.join(genre.name for genre in self.genre.all()[:3])
+
+    display_genre.short_description = 'Genre'
+
+
 class BookInstance(models.Model):
-    """Model representing a specific copy of a book."""
+    """Model representing a specific copy of a book"""
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         help_text=_("Unique ID for this particular book across whole library"),
     )
-    book = models.ForeignKey("Book", on_delete=models.RESTRICT)
-    imprint = models.CharField(max_length=200)
+    book = models.ForeignKey(
+        "Book", on_delete=models.RESTRICT)  # <-- Đúng rồi nha
+    imprint = models.CharField(max_length=constants.MAX_BOOK_IMPRINT_LENGTH)
     due_back = models.DateField(null=True, blank=True)
 
     status = models.CharField(
@@ -57,11 +69,13 @@ class BookInstance(models.Model):
         default="m",
         help_text=_("Book availability"),
     )
+
     class Meta:
         ordering = ["due_back"]
 
     def __str__(self):
         return f"{self.id} ({self.book.title})"
+
 
 class Author(models.Model):
     """Model representing an author."""
@@ -69,6 +83,7 @@ class Author(models.Model):
     last_name = models.CharField(max_length=constants.MAX_AUTHOR_NAME_LENGTH)
     date_of_birth = models.DateField(null=True, blank=True)
     date_of_death = models.DateField(_("Died"), null=True, blank=True)
+
     class Meta:
         ordering = ["last_name", "first_name"]
 
