@@ -11,3 +11,5 @@ LOAN_STATUS = (
     ("a", "Available"),
     ("r", "Reserved"),
 )
+
+LOAN_STATUS_AVAILABLE = "a"
