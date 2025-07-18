@@ -57,8 +57,7 @@ class BookInstance(models.Model):
         default=uuid.uuid4,
         help_text=_("Unique ID for this particular book across whole library"),
     )
-    book = models.ForeignKey(
-        "Book", on_delete=models.RESTRICT)  # <-- Đúng rồi nha
+    book = models.ForeignKey("Book", on_delete=models.RESTRICT)
     imprint = models.CharField(max_length=constants.MAX_BOOK_IMPRINT_LENGTH)
     due_back = models.DateField(null=True, blank=True)
 

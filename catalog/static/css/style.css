@@ -1,0 +1,13 @@
+.copies-section {
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 10px;
+}
