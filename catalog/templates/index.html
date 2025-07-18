@@ -15,4 +15,12 @@
         <li><strong>{% trans "Copies available" %}:</strong> {{ num_instances_available }}</li>
         <li><strong>{% trans "Authors" %}:</strong> {{ num_authors }}</li>
     </ul>
+
+    <p>
+        {% blocktrans count num_visits as count %}
+            You have visited this page {{ count }} time
+        {% plural %}
+            You have visited this page {{ count }} times
+        {% endblocktrans %}
+    </p>
 {% endblock %}
