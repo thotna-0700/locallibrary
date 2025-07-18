@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{% trans "Borrowed books" %}</h1>
+
+  {% if bookinstance_list %}
+    <ul>
+      {% for book_instance in bookinstance_list %}
+        <li class="{% if book_instance.is_overdue %}text-danger{% endif %}">
+          <a href="{% url 'book-detail' book_instance.book.pk %}">
+            {{ book_instance.book.title }}
+          </a> ({{ book_instance.due_back }})
+          {% if book_instance.is_overdue %}
+            <span style="color: red;">{% trans "Overdue" %}</span>
+          {% endif %}
+          {% if book_instance.status == loan_status_on_loan and perms.catalog.can_mark_returned %}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{% trans "There are no books borrowed." %}</p>
+  {% endif %}
+{% endblock %}

@@ -4,6 +4,8 @@ import uuid
 from django.utils.translation import gettext_lazy as _
 from django.db.models import PROTECT
 from . import constants
+from django.contrib.auth.models import User
+from datetime import date
 
 
 class Genre(models.Model):
@@ -21,7 +23,7 @@ class Book(models.Model):
     """Model representing a book (but not a specific copy)."""
     title = models.CharField(max_length=constants.MAX_BOOK_TITLE_LENGTH)
     author = models.ForeignKey(
-        "Author", on_delete=PROTECT  # <-- Đã đổi từ SET_NULL sang PROTECT
+        "Author", on_delete=PROTECT  
     )
     summary = models.TextField(
         max_length=constants.MAX_BOOK_SUMMARY_LENGTH,
@@ -60,6 +62,7 @@ class BookInstance(models.Model):
     book = models.ForeignKey("Book", on_delete=models.RESTRICT)
     imprint = models.CharField(max_length=constants.MAX_BOOK_IMPRINT_LENGTH)
     due_back = models.DateField(null=True, blank=True)
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     status = models.CharField(
         max_length=1,
@@ -71,9 +74,14 @@ class BookInstance(models.Model):
 
     class Meta:
         ordering = ["due_back"]
+        permissions = (("can_mark_returned", "Set book as returned"),)
 
     def __str__(self):
         return f"{self.id} ({self.book.title})"
+
+    @property
+    def is_overdue(self):
+        return bool(self.due_back and date.today() > self.due_back)
 
 
 class Author(models.Model):
