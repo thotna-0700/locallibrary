@@ -23,7 +23,7 @@ class Book(models.Model):
     """Model representing a book (but not a specific copy)."""
     title = models.CharField(max_length=constants.MAX_BOOK_TITLE_LENGTH)
     author = models.ForeignKey(
-        "Author", on_delete=PROTECT  
+        "Author", on_delete=PROTECT
     )
     summary = models.TextField(
         max_length=constants.MAX_BOOK_SUMMARY_LENGTH,
