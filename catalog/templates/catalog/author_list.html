@@ -1,0 +1,18 @@
+{% if perms.catalog.add_author %}
+    <p><a href="{% url 'author-create' %}">{% trans "Create new author" %}</a></p>
+{% endif %}
+
+<ul>
+    {% for author in author_list %}
+        <li>
+            <a href="{{ author.get_absolute_url }}">{{ author }}</a>
+
+            {% if perms.catalog.change_author %}
+                - <a href="{% url 'author-update' author.pk %}">{% trans "Edit" %}</a>
+            {% endif %}
+            {% if perms.catalog.delete_author %}
+                - <a href="{% url 'author-delete' author.pk %}">{% trans "Delete" %}</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
