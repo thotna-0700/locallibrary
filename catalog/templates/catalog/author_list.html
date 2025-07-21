@@ -1,3 +1,6 @@
+{% extends "base_generic.html" %}
+{% load i18n %}
+
 {% if perms.catalog.add_author %}
     <p><a href="{% url 'author-create' %}">{% trans "Create new author" %}</a></p>
 {% endif %}
