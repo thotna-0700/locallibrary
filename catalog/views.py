@@ -5,6 +5,7 @@ from catalog.models import Book, Author, BookInstance
 from catalog.constants import (
     LOAN_STATUS_AVAILABLE,
     BOOK_PAGINATE_BY,
+    AUTHOR_PAGINATE_BY,
     LOAN_STATUS_ON_LOAN
 )
 from catalog.constants import DEFAULT_AUTHOR_DEATH_DATE
@@ -133,3 +134,12 @@ class AuthorDelete(PermissionRequiredMixin, DeleteView):
     model = Author
     success_url = reverse_lazy('authors')
     permission_required = 'catalog.delete_author'
+
+
+class AuthorListView(generic.ListView):
+    model = Author
+    paginate_by = AUTHOR_PAGINATE_BY
+
+
+class AuthorDetailView(generic.DetailView):
+    model = Author
